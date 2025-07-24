@@ -3,7 +3,7 @@ import Header from "./components/header";
 import Sidebar from "./components/sidebar";
 import Budget from "./pages/budget";
 import CreateRequest from "./pages/createrequest";
-import RequestDetails from "./pages/requestdetails";
+import RequestDetailsTable from "./pages/requestdetails";
 import Footer from "./components/footer";
 import UserManual from "./pages/usermanual";
 import "./index.css";
@@ -27,7 +27,10 @@ function App() {
           <main className="flex-1 p-4">
             <Routes>
               {" "}
-              <Route path="/request-details" element={<RequestDetails />} />
+              <Route
+                path="/request-details"
+                element={<RequestDetailsTable />}
+              />
               <Route path="/create-request" element={<CreateRequest />} />
               <Route path="/budget" element={<Budget />} />
               <Route path="/usermanual" element={<UserManual />} />

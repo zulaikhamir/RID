@@ -1,86 +1,165 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useState, useReducer } from "react";
+import {
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+  createColumnHelper,
+} from "@tanstack/react-table";
 
-const requests = [
+// Sample RID Request Details data
+const defaultData = [
   {
-    id: "REQ-2025-001",
-    status: "PENDING",
-    changeNo: "CHG-2025-0001",
-    createdDate: "July 20, 2025",
-    creator: "John Doe",
-    approvalStatus: "Awaiting Manager Approval",
+    requestId: "RID-001",
+    projectName: "VPC Setup Automation",
+    requestedBy: "John Doe",
+    status: "Pending",
+    requestedOn: "2025-07-20",
+    priority: "High",
   },
   {
-    id: "REQ-2025-002",
-    status: "APPROVED",
-    changeNo: "CHG-2025-0002",
-    createdDate: "July 21, 2025",
-    creator: "Jane Smith",
-    approvalStatus: "Approved",
+    requestId: "RID-002",
+    projectName: "EC2 Provisioning",
+    requestedBy: "Jane Smith",
+    status: "In Progress",
+    requestedOn: "2025-07-21",
+    priority: "Medium",
+  },
+  {
+    requestId: "RID-003",
+    projectName: "Security Group Config",
+    requestedBy: "Ali Khan",
+    status: "Completed",
+    requestedOn: "2025-07-18",
+    priority: "Low",
   },
 ];
 
-const statusColors = {
-  PENDING: "bg-yellow-100 text-yellow-700",
-  APPROVED: "bg-green-100 text-green-700",
-  REJECTED: "bg-red-100 text-red-700",
-};
+const columnHelper = createColumnHelper();
 
-const RequestDetails = () => {
+const columns = [
+  columnHelper.accessor("requestId", {
+    header: "Request ID",
+    cell: (info) => <b>{info.getValue()}</b>,
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor("projectName", {
+    header: "Project Name",
+    cell: (info) => info.getValue(),
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor("requestedBy", {
+    header: "Requested By",
+    cell: (info) => info.getValue(),
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor("status", {
+    header: "Status",
+    cell: (info) => {
+      const value = info.getValue();
+      const color =
+        value === "Completed"
+          ? "text-green-600"
+          : value === "In Progress"
+          ? "text-yellow-600"
+          : "text-red-600";
+      return <span className={color}>{value}</span>;
+    },
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor("requestedOn", {
+    header: "Requested On",
+    cell: (info) => new Date(info.getValue()).toLocaleDateString(),
+    footer: (info) => info.column.id,
+  }),
+  columnHelper.accessor("priority", {
+    header: "Priority",
+    cell: (info) => {
+      const value = info.getValue();
+      const badgeColor =
+        value === "High"
+          ? "bg-red-200 text-red-800"
+          : value === "Medium"
+          ? "bg-yellow-200 text-yellow-800"
+          : "bg-green-200 text-green-800";
+      return (
+        <span className={`px-2 py-1 rounded text-sm ${badgeColor}`}>
+          {value}
+        </span>
+      );
+    },
+    footer: (info) => info.column.id,
+  }),
+];
+
+const RequestDetailsTable = () => {
+  const [data] = useState(() => [...defaultData]);
+  const rerender = useReducer(() => ({}), {})[1];
+
+  const table = useReactTable({
+    data,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
   return (
-    <div className="p-6">
-      <h1 className="text-3xl font-bold mb-6 text-gray-800">Request Details</h1>
+    <div className="p-4">
+      <h2 className="text-xl font-bold mb-4">Request Details</h2>
+      <table className="min-w-full border border-gray-300 rounded shadow">
+        <thead className="bg-gray-100">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id} className="border px-4 py-2 text-left">
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id} className="hover:bg-gray-50">
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="border px-4 py-2">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+        <tfoot className="bg-gray-100">
+          {table.getFooterGroups().map((footerGroup) => (
+            <tr key={footerGroup.id}>
+              {footerGroup.headers.map((header) => (
+                <th key={header.id} className="border px-4 py-2 text-left">
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.footer,
+                        header.getContext()
+                      )}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </tfoot>
+      </table>
 
-      <div className="space-y-4">
-        {requests.map((req, index) => (
-          <motion.div
-            key={index}
-            className="p-6 rounded-2xl shadow-md bg-white/30 backdrop-blur-lg border border-white/20 hover:shadow-lg transition-all duration-300"
-            whileHover={{ scale: 1.02 }}
-          >
-            <div className="flex justify-between items-start">
-              <div>
-                <h2 className="text-xl font-semibold text-gray-800">
-                  {req.id}
-                </h2>
-                <p className="text-sm text-gray-600">
-                  Change No: {req.changeNo}
-                </p>
-                <p className="text-sm text-gray-600">
-                  Created Date: {req.createdDate}
-                </p>
-              </div>
-              <span
-                className={`px-3 py-1 text-sm rounded-full font-medium ${
-                  statusColors[req.status]
-                }`}
-              >
-                {req.status}
-              </span>
-            </div>
-
-            <div className="mt-4 flex justify-between items-center">
-              <div>
-                <p className="text-sm text-gray-700">
-                  <strong>Creator:</strong> {req.creator}
-                </p>
-                <p className="text-sm text-gray-700">
-                  <strong>Approval Status:</strong> {req.approvalStatus}
-                </p>
-              </div>
-
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                className="px-5 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-medium shadow-md hover:shadow-lg"
-              >
-                More Details
-              </motion.button>
-            </div>
-          </motion.div>
-        ))}
+      <div className="mt-4">
+        <button
+          onClick={() => rerender()}
+          className="bg-blue-500 text-white px-4 py-2 rounded"
+        >
+          Rerender
+        </button>
       </div>
     </div>
   );
 };
 
-export default RequestDetails;
+export default RequestDetailsTable;
