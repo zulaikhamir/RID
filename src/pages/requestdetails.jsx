@@ -7,6 +7,7 @@ import {
 } from "@tanstack/react-table";
 
 // Sample RID Request Details data
+
 const defaultData = [
   {
     requestId: "RID-001",
@@ -93,6 +94,7 @@ const columns = [
 
 const RequestDetailsTable = () => {
   const [data] = useState(() => [...defaultData]);
+  const [visibleRows, setVisibleRows] = useState(2); // show 5 rows initially
   const rerender = useReducer(() => ({}), {})[1];
 
   const table = useReactTable({
@@ -122,42 +124,31 @@ const RequestDetailsTable = () => {
           ))}
         </thead>
         <tbody>
-          {table.getRowModel().rows.map((row) => (
-            <tr key={row.id} className="hover:bg-gray-50">
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="border px-4 py-2">
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+          {table
+            .getRowModel()
+            .rows.slice(0, visibleRows)
+            .map((row) => (
+              <tr key={row.id} className="hover:bg-gray-50">
+                {row.getVisibleCells().map((cell) => (
+                  <td key={cell.id} className="border px-4 py-2">
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          {visibleRows < table.getRowModel().rows.length && (
+            <tr>
+              <td
+                colSpan={columns.length}
+                className="text-center hover:bg-gray-50 cursor-pointer py-2 hover:underline"
+                onClick={() => setVisibleRows((prev) => prev + 5)}
+              >
+                Load More...
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
-        <tfoot className="bg-gray-100">
-          {table.getFooterGroups().map((footerGroup) => (
-            <tr key={footerGroup.id}>
-              {footerGroup.headers.map((header) => (
-                <th key={header.id} className="border px-4 py-2 text-left">
-                  {header.isPlaceholder
-                    ? null
-                    : flexRender(
-                        header.column.columnDef.footer,
-                        header.getContext()
-                      )}
-                </th>
-              ))}
-            </tr>
-          ))}
-        </tfoot>
       </table>
-
-      <div className="mt-4">
-        <button
-          onClick={() => rerender()}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Rerender
-        </button>
-      </div>
     </div>
   );
 };
