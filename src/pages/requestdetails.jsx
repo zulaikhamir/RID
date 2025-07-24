@@ -116,17 +116,19 @@ const RequestDetailsTable = () => {
 
   return (
     <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Request Details</h2>
+      <div className="mb-4 w-full flex justify-between items-center">
+        <h2 className="text-xl font-bold mb-4">Request Details</h2>
 
-      {/* Search Bar */}
-      <input
-        type="text"
-        placeholder="Search by ID, Project, or Requested By"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        className="mb-4 w-1/3 p-2 border rounded bg-white/30 backdrop-blur-sm"
-      />
+        {/* Search Bar */}
 
+        <input
+          type="text"
+          placeholder="Search by ID, Project, or Requested By"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="mb-4 w-1/2 p-2 border rounded bg-white/30 backdrop-blur-sm"
+        />
+      </div>
       <div className="mb-4 text-sm text-gray-600">
         Showing {Math.min(visibleRows, filteredData.length)} of{" "}
         {filteredData.length} requests
