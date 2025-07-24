@@ -165,6 +165,18 @@ const RequestDetailsTable = () => {
   const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
   const [openDropdown, setOpenDropdown] = useState(null);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const openModal = (request) => {
+    setSelectedRequest(request);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedRequest(null);
+  };
 
   // Reset visible rows when filters change
   useEffect(() => {
@@ -316,9 +328,13 @@ const RequestDetailsTable = () => {
               <>
                 {displayedRows.map((row) => (
                   <tr key={row.requestId} className="hover:bg-gray-50">
-                    <td className="border px-4 py-2">
+                    <td
+                      className="border px-4 py-2 underline cursor-pointer hover:70" //req ids underlined
+                      onClick={() => openModal(row)}
+                    >
                       <b>{row.requestId}</b>
                     </td>
+
                     <td className="border px-4 py-2">{row.projectName}</td>
                     <td className="border px-4 py-2">{row.requestedBy}</td>
                     <td className="border px-4 py-2">
