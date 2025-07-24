@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
 
 // Sample RID Request Details data
 const defaultData = [
@@ -52,15 +53,19 @@ const defaultData = [
   },
 ];
 
-// Helper: Search filter
-const filterRequests = (data, search) => {
-  if (!search) return data;
-  return data.filter(
-    (item) =>
+// Helper: Search filter, status, priority
+const filterRequests = (data, search, status, priority) => {
+  return data.filter((item) => {
+    const matchesSearch =
       item.requestId.toLowerCase().includes(search.toLowerCase()) ||
       item.projectName.toLowerCase().includes(search.toLowerCase()) ||
-      item.requestedBy.toLowerCase().includes(search.toLowerCase())
-  );
+      item.requestedBy.toLowerCase().includes(search.toLowerCase());
+
+    const matchesStatus = status ? item.status === status : true;
+    const matchesPriority = priority ? item.priority === priority : true;
+
+    return matchesSearch && matchesStatus && matchesPriority;
+  });
 };
 
 // Helper: Sort by Request ID descending
@@ -102,89 +107,250 @@ const formatDate = (dateString) => {
   return new Date(dateString).toLocaleDateString();
 };
 
+// Column Filter Dropdown Component
+const ColumnFilter = ({
+  title,
+  options,
+  value,
+  onChange,
+  isOpen,
+  onToggle,
+}) => {
+  return (
+    <div className="relative">
+      <div
+        className="flex items-center justify-between cursor-pointer hover:bg-gray-200 px-2 py-1 rounded"
+        onClick={onToggle}
+      >
+        <span className="font-semibold">{title}</span>
+        {isOpen ? (
+          <ChevronUp className="w-4 h-4 ml-2" />
+        ) : (
+          <ChevronDown className="w-4 h-4 ml-2" />
+        )}
+      </div>
+
+      {isOpen && (
+        <div className="absolute top-full left-0 mt-1 bg-white border border-gray-300 rounded shadow-lg z-10 min-w-full">
+          <div className="py-1">
+            <button
+              className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 ${
+                !value ? "bg-blue-50 text-blue-700" : ""
+              }`}
+              onClick={() => onChange("")}
+            >
+              All
+            </button>
+            {options.map((option) => (
+              <button
+                key={option}
+                className={`block w-full text-left px-3 py-2 text-sm hover:bg-gray-100 ${
+                  value === option ? "bg-blue-50 text-blue-700" : ""
+                }`}
+                onClick={() => onChange(option)}
+              >
+                {option}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const RequestDetailsTable = () => {
   const [visibleRows, setVisibleRows] = useState(3);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState("");
+  const [openDropdown, setOpenDropdown] = useState(null);
+
+  // Reset visible rows when filters change
+  useEffect(() => {
+    setVisibleRows(3);
+  }, [searchTerm, statusFilter, priorityFilter]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (!event.target.closest(".relative")) {
+        setOpenDropdown(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const sortedData = sortRequestsDesc(defaultData);
-  const filteredData = filterRequests(sortedData, searchTerm);
+  const filteredData = filterRequests(
+    sortedData,
+    searchTerm,
+    statusFilter,
+    priorityFilter
+  );
+
   const displayedRows = filteredData.slice(0, visibleRows);
 
   const loadMore = () => {
     setVisibleRows((prev) => prev + 3);
   };
 
+  const clearFilters = () => {
+    setSearchTerm("");
+    setStatusFilter("");
+    setPriorityFilter("");
+    setOpenDropdown(null);
+  };
+
+  const toggleDropdown = (dropdown) => {
+    setOpenDropdown(openDropdown === dropdown ? null : dropdown);
+  };
+
+  // Get unique values for filters
+  const statusOptions = [...new Set(defaultData.map((item) => item.status))];
+  const priorityOptions = [
+    ...new Set(defaultData.map((item) => item.priority)),
+  ];
+
   return (
     <div className="p-4">
+      {/* Header */}
       <div className="mb-4 w-full flex justify-between items-center">
-        <h2 className="text-xl font-bold mb-4">Request Details</h2>
+        <h2 className="text-xl font-bold">Request Details</h2>
 
         {/* Search Bar */}
-
         <input
           type="text"
           placeholder="Search by ID, Project, or Requested By"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="mb-4 w-1/2 p-2 border rounded bg-white/30 backdrop-blur-sm"
+          className="w-1/2 p-2 border rounded bg-white/30 backdrop-blur-sm"
         />
       </div>
+
+      {/* Active Filters Display */}
+      {(searchTerm || statusFilter || priorityFilter) && (
+        <div className="mb-4 flex gap-2 items-center flex-wrap">
+          <span className="text-sm text-gray-600">Active filters:</span>
+          {searchTerm && (
+            <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded text-sm">
+              Search: "{searchTerm}"
+            </span>
+          )}
+          {statusFilter && (
+            <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-sm">
+              Status: {statusFilter}
+            </span>
+          )}
+          {priorityFilter && (
+            <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded text-sm">
+              Priority: {priorityFilter}
+            </span>
+          )}
+          <button
+            onClick={clearFilters}
+            className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors"
+          >
+            Clear All
+          </button>
+        </div>
+      )}
+
+      {/* Results Counter */}
       <div className="mb-4 text-sm text-gray-600">
         Showing {Math.min(visibleRows, filteredData.length)} of{" "}
         {filteredData.length} requests
+        {filteredData.length !== defaultData.length && (
+          <span className="text-blue-600">
+            {" "}
+            (filtered from {defaultData.length} total)
+          </span>
+        )}
       </div>
 
+      {/* Table */}
       <div className="overflow-x-auto">
         <table className="min-w-full border border-gray-300 rounded shadow">
           <thead className="bg-gray-100">
             <tr>
-              <th className="border px-4 py-2 text-left font-semibold">
-                Request ID
+              <th className="border px-4 py-2 text-left">
+                <span className="font-semibold">Request ID</span>
               </th>
-              <th className="border px-4 py-2 text-left font-semibold">
-                Project Name
+              <th className="border px-4 py-2 text-left">
+                <span className="font-semibold">Project Name</span>
               </th>
-              <th className="border px-4 py-2 text-left font-semibold">
-                Requested By
+              <th className="border px-4 py-2 text-left">
+                <span className="font-semibold">Requested By</span>
               </th>
-              <th className="border px-4 py-2 text-left font-semibold">
-                Status
+              <th className="border px-4 py-2 text-left">
+                <ColumnFilter
+                  title="Status"
+                  options={statusOptions}
+                  value={statusFilter}
+                  onChange={setStatusFilter}
+                  isOpen={openDropdown === "status"}
+                  onToggle={() => toggleDropdown("status")}
+                />
               </th>
-              <th className="border px-4 py-2 text-left font-semibold">
-                Requested On
+              <th className="border px-4 py-2 text-left">
+                <span className="font-semibold">Requested On</span>
               </th>
-              <th className="border px-4 py-2 text-left font-semibold">
-                Priority
+              <th className="border px-4 py-2 text-left">
+                <ColumnFilter
+                  title="Priority"
+                  options={priorityOptions}
+                  value={priorityFilter}
+                  onChange={setPriorityFilter}
+                  isOpen={openDropdown === "priority"}
+                  onToggle={() => toggleDropdown("priority")}
+                />
               </th>
             </tr>
           </thead>
           <tbody>
-            {displayedRows.map((row) => (
-              <tr key={row.requestId} className="hover:bg-gray-50">
-                <td className="border px-4 py-2">
-                  <b>{row.requestId}</b>
-                </td>
-                <td className="border px-4 py-2">{row.projectName}</td>
-                <td className="border px-4 py-2">{row.requestedBy}</td>
-                <td className="border px-4 py-2">
-                  <StatusCell status={row.status} />
-                </td>
-                <td className="border px-4 py-2">
-                  {formatDate(row.requestedOn)}
-                </td>
-                <td className="border px-4 py-2">
-                  <PriorityBadge priority={row.priority} />
-                </td>
-              </tr>
-            ))}
-            {visibleRows < filteredData.length && (
+            {displayedRows.length > 0 ? (
+              <>
+                {displayedRows.map((row) => (
+                  <tr key={row.requestId} className="hover:bg-gray-50">
+                    <td className="border px-4 py-2">
+                      <b>{row.requestId}</b>
+                    </td>
+                    <td className="border px-4 py-2">{row.projectName}</td>
+                    <td className="border px-4 py-2">{row.requestedBy}</td>
+                    <td className="border px-4 py-2">
+                      <StatusCell status={row.status} />
+                    </td>
+                    <td className="border px-4 py-2">
+                      {formatDate(row.requestedOn)}
+                    </td>
+                    <td className="border px-4 py-2">
+                      <PriorityBadge priority={row.priority} />
+                    </td>
+                  </tr>
+                ))}
+                {visibleRows < filteredData.length && (
+                  <tr>
+                    <td
+                      colSpan={6}
+                      className="text-center hover:bg-gray-50 cursor-pointer py-2 hover:underline border"
+                      onClick={loadMore}
+                    >
+                      Load More...
+                    </td>
+                  </tr>
+                )}
+              </>
+            ) : (
               <tr>
                 <td
                   colSpan={6}
-                  className="text-center hover:bg-gray-50 cursor-pointer py-2 hover:underline border"
-                  onClick={loadMore}
+                  className="text-center py-8 text-gray-500 border"
                 >
-                  Load More...
+                  No requests found matching your filters.
                 </td>
               </tr>
             )}
