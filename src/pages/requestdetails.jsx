@@ -52,7 +52,18 @@ const defaultData = [
   },
 ];
 
-// Helper function to sort requests in descending order
+// Helper: Search filter
+const filterRequests = (data, search) => {
+  if (!search) return data;
+  return data.filter(
+    (item) =>
+      item.requestId.toLowerCase().includes(search.toLowerCase()) ||
+      item.projectName.toLowerCase().includes(search.toLowerCase()) ||
+      item.requestedBy.toLowerCase().includes(search.toLowerCase())
+  );
+};
+
+// Helper: Sort by Request ID descending
 const sortRequestsDesc = (data) => {
   return [...data].sort(
     (a, b) =>
@@ -60,7 +71,7 @@ const sortRequestsDesc = (data) => {
   );
 };
 
-// Status cell component
+// Status Cell
 const StatusCell = ({ status }) => {
   const color =
     status === "Completed"
@@ -71,7 +82,7 @@ const StatusCell = ({ status }) => {
   return <span className={color}>{status}</span>;
 };
 
-// Priority badge component
+// Priority Badge
 const PriorityBadge = ({ priority }) => {
   const badgeColor =
     priority === "High"
@@ -93,27 +104,32 @@ const formatDate = (dateString) => {
 
 const RequestDetailsTable = () => {
   const [visibleRows, setVisibleRows] = useState(3);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  // Sort data once when component initializes
   const sortedData = sortRequestsDesc(defaultData);
+  const filteredData = filterRequests(sortedData, searchTerm);
+  const displayedRows = filteredData.slice(0, visibleRows);
 
   const loadMore = () => {
     setVisibleRows((prev) => prev + 3);
   };
 
-  const showLess = () => {
-    setVisibleRows(3);
-  };
-
-  // Get the rows to display
-  const displayedRows = sortedData.slice(0, visibleRows);
-
   return (
     <div className="p-4">
       <h2 className="text-xl font-bold mb-4">Request Details</h2>
+
+      {/* Search Bar */}
+      <input
+        type="text"
+        placeholder="Search by ID, Project, or Requested By"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="mb-4 w-1/3 p-2 border rounded bg-white/30 backdrop-blur-sm"
+      />
+
       <div className="mb-4 text-sm text-gray-600">
-        Showing {Math.min(visibleRows, sortedData.length)} of{" "}
-        {sortedData.length} requests
+        Showing {Math.min(visibleRows, filteredData.length)} of{" "}
+        {filteredData.length} requests
       </div>
 
       <div className="overflow-x-auto">
@@ -141,7 +157,7 @@ const RequestDetailsTable = () => {
             </tr>
           </thead>
           <tbody>
-            {displayedRows.map((row, index) => (
+            {displayedRows.map((row) => (
               <tr key={row.requestId} className="hover:bg-gray-50">
                 <td className="border px-4 py-2">
                   <b>{row.requestId}</b>
@@ -159,7 +175,7 @@ const RequestDetailsTable = () => {
                 </td>
               </tr>
             ))}
-            {visibleRows < sortedData.length && (
+            {visibleRows < filteredData.length && (
               <tr>
                 <td
                   colSpan={6}
