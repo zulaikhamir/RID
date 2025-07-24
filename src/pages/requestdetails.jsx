@@ -6,7 +6,9 @@ import Modal from "../components/Modal";
 const defaultData = [
   {
     requestId: "RID-001",
-    projectName: "VPC Setup Automation",
+    projectName: "Resource Management System (RMS)",
+    changeDetails:
+      "Automate resource allocation and add real-time usage dashboards for managers.",
     requestedBy: "John Doe",
     status: "Pending",
     requestedOn: "2025-07-20",
@@ -14,39 +16,49 @@ const defaultData = [
   },
   {
     requestId: "RID-002",
-    projectName: "EC2 Provisioning",
+    projectName: "Rapid Infra Deployment (RID)",
+    changeDetails:
+      "Enhance EC2 provisioning scripts and integrate auto-tagging for cost tracking.",
     requestedBy: "Jane Smith",
     status: "In Progress",
-    requestedOn: "2025-07-21",
+    requestedOn: "2025-07-01",
     priority: "Medium",
   },
   {
     requestId: "RID-003",
-    projectName: "Security Group Config",
+    projectName: "Security Group Configuration",
+    changeDetails:
+      "Update security rules to follow CIS benchmarks and enable logging for all traffic.",
     requestedBy: "Ali Khan",
     status: "Completed",
-    requestedOn: "2025-07-18",
+    requestedOn: "2025-10-18",
     priority: "Low",
   },
   {
     requestId: "RID-004",
     projectName: "Load Balancer Setup",
+    changeDetails:
+      "Set up an application load balancer with sticky sessions and SSL termination.",
     requestedBy: "Sarah Wilson",
     status: "Pending",
-    requestedOn: "2025-07-22",
+    requestedOn: "2025-12-31",
     priority: "High",
   },
   {
     requestId: "RID-005",
     projectName: "Database Migration",
+    changeDetails:
+      "Migrate on-premises database to Amazon RDS with minimal downtime strategy.",
     requestedBy: "Mike Johnson",
     status: "In Progress",
-    requestedOn: "2025-07-19",
+    requestedOn: "2025-11-19",
     priority: "Medium",
   },
   {
     requestId: "RID-006",
     projectName: "Backup Configuration",
+    changeDetails:
+      "Implement daily EBS snapshots and enable cross-region backup for disaster recovery.",
     requestedBy: "Lisa Chen",
     status: "Completed",
     requestedOn: "2025-07-17",
@@ -296,6 +308,10 @@ const RequestDetailsTable = () => {
               <th className="border px-4 py-2 text-left">
                 <span className="font-semibold">Project Name</span>
               </th>
+              <th className="border px-4 py-2 text-left font-semibold">
+                Change Details
+              </th>
+
               <th className="border px-4 py-2 text-left">
                 <span className="font-semibold">Requested By</span>
               </th>
@@ -337,6 +353,7 @@ const RequestDetailsTable = () => {
                     </td>
 
                     <td className="border px-4 py-2">{row.projectName}</td>
+                    <td className="border px-4 py-2">{row.changeDetails}</td>
                     <td className="border px-4 py-2">{row.requestedBy}</td>
                     <td className="border px-4 py-2">
                       <StatusCell status={row.status} />
@@ -382,12 +399,42 @@ const RequestDetailsTable = () => {
               <h2 className="text-xl font-bold mb-4">
                 {selectedRequest.projectName}
               </h2>
+
               <p>
-                <b>Request ID:</b> {selectedRequest.requestId}
+                <b>Start Date:</b>{" "}
+                {selectedRequest.startDate
+                  ? new Date(selectedRequest.startDate).toLocaleDateString()
+                  : "N/A"}
               </p>
-              <p>
-                <b>Requested By:</b> {selectedRequest.requestedBy}
-              </p>
+
+              <h3 className="text-lg font-semibold mt-4">Approval Details</h3>
+              <div className="mt-2">
+                <p>
+                  <b>1st Approval:</b>{" "}
+                  {selectedRequest.approvalDetails?.first?.entity || "N/A"} -
+                  <b> Date:</b>{" "}
+                  {selectedRequest.approvalDetails?.first?.date
+                    ? new Date(
+                        selectedRequest.approvalDetails.first.date
+                      ).toLocaleDateString()
+                    : "N/A"}{" "}
+                  -<b> Status:</b>{" "}
+                  {selectedRequest.approvalDetails?.first?.status || "Pending"}
+                </p>
+                <p>
+                  <b>2nd Approval:</b>{" "}
+                  {selectedRequest.approvalDetails?.second?.entity || "N/A"} -
+                  <b> Date:</b>{" "}
+                  {selectedRequest.approvalDetails?.second?.date
+                    ? new Date(
+                        selectedRequest.approvalDetails.second.date
+                      ).toLocaleDateString()
+                    : "N/A"}{" "}
+                  -<b> Status:</b>{" "}
+                  {selectedRequest.approvalDetails?.second?.status || "Pending"}
+                </p>
+              </div>
+
               <p>
                 <b>Status:</b> {selectedRequest.status}
               </p>
