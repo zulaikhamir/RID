@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 
 const Sidebar = () => {
   return (
-    <div className="w-64 h-screen bg-blue-900 text-white p-6 space-y-4">
-      <h2 className="text-2xl font-bold mb-8">Menu</h2>
+    <div className="w-64 h-screen  bg-[#181ed4] text-white p-6 space-y-4">
+      {/* <h2 className="text-2xl font-bold mb-8">Menu</h2> */}
       <nav className="flex flex-col gap-4">
         {" "}
         <Link to="/request-details" className="hover:text-blue-300">
