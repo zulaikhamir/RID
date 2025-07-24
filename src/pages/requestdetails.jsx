@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import Modal from "../components/Modal";
 
 // Sample RID Request Details data
 const defaultData = [
@@ -329,7 +330,7 @@ const RequestDetailsTable = () => {
                 {displayedRows.map((row) => (
                   <tr key={row.requestId} className="hover:bg-gray-50">
                     <td
-                      className="border px-4 py-2 underline cursor-pointer hover:70" //req ids underlined
+                      className="border px-4 py-2 underline cursor-pointer hover:text-blue-600" //req ids underlined
                       onClick={() => openModal(row)}
                     >
                       <b>{row.requestId}</b>
@@ -372,6 +373,34 @@ const RequestDetailsTable = () => {
             )}
           </tbody>
         </table>
+        <Modal
+          isOpen={!!selectedRequest}
+          onClose={() => setSelectedRequest(null)}
+        >
+          {selectedRequest && (
+            <div>
+              <h2 className="text-xl font-bold mb-4">
+                {selectedRequest.projectName}
+              </h2>
+              <p>
+                <b>Request ID:</b> {selectedRequest.requestId}
+              </p>
+              <p>
+                <b>Requested By:</b> {selectedRequest.requestedBy}
+              </p>
+              <p>
+                <b>Status:</b> {selectedRequest.status}
+              </p>
+              <p>
+                <b>Priority:</b> {selectedRequest.priority}
+              </p>
+              <p>
+                <b>Requested On:</b>{" "}
+                {new Date(selectedRequest.requestedOn).toLocaleDateString()}
+              </p>
+            </div>
+          )}
+        </Modal>
       </div>
     </div>
   );
