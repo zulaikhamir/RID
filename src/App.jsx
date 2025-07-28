@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./components/header";
 import Sidebar from "./components/sidebar";
 import Budget from "./pages/budget";
-import CreateRequest from "./pages/createrequest";
+import CreateRequest from "./pages/CreateRequest";
 import RequestDetailsTable from "./pages/requestdetails";
 import Footer from "./components/footer";
 import UserManual from "./pages/usermanual";
@@ -31,7 +31,7 @@ function App() {
                 path="/request-details"
                 element={<RequestDetailsTable />}
               />
-              <Route path="/create-request" element={<CreateRequest />} />
+              <Route path="/CreateRequest" element={<CreateRequest />} />
               <Route path="/budget" element={<Budget />} />
               <Route path="/usermanual" element={<UserManual />} />
             </Routes>

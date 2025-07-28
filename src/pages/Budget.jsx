@@ -1,32 +1,45 @@
-import React from "react";
+import { useState } from "react";
 
-const Budget = () => {
-  const data = [
-    { label: "Total Allocated", value: "$12,500" },
-    { label: "Used This Month", value: "$8,750" },
-    { label: "Remaining", value: "$3,750" },
-    { label: "Pending Requests", value: "$2,100" },
+const Budget = ({ TriangleRight, TriangleDown }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const features = [
+    "30-day cost projection (EC2)",
+    "AWS Pricing API integration",
+    "Track launched instance costs",
+    "Set monthly spend limit per customer",
+    "Alert if nearing budget",
   ];
 
-  return (
-    <div className="p-6">
-      {/* Title */}
-      <h1 className="text-2xl font-bold text-gray-800 mb-6">Budget Overview</h1>
+  const handleClick = (feature) => {
+    console.log(`Clicked: ${feature}`);
+    // Example: navigate(`/budget/${feature.toLowerCase().replace(/\s+/g, "-")}`);
+  };
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {data.map((item, index) => (
-          <div
-            key={index}
-            className="bg-white/30 backdrop-blur-md shadow-lg rounded-xl p-6 text-center  border border-white/20
-                       transform transition-all duration-300 
-                       hover:scale-105 hover:shadow-2xl"
-          >
-            <p className="text-3xl font-bold text-blue-600">{item.value}</p>
-            <p className="text-gray-600 mt-2">{item.label}</p>
-          </div>
-        ))}
-      </div>
+  return (
+    <div className="space-y-2">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center w-full text-left hover:text-blue-300 transition-colors py-1"
+      >
+        <div className="flex items-center justify-center w-4 h-4 mr-3">
+          {isOpen ? <TriangleDown /> : <TriangleRight />}
+        </div>
+        <span>Budget</span>
+      </button>
+      {isOpen && (
+        <div className="ml-7 space-y-1">
+          {features.map((item, index) => (
+            <button
+              key={index}
+              onClick={() => handleClick(item)}
+              className="block w-full text-left text-sm text-blue-100 hover:text-white hover:bg-blue-600 hover:bg-opacity-30 px-2 py-1 rounded transition-colors"
+            >
+              {item}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
