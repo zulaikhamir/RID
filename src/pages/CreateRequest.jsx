@@ -1,9 +1,10 @@
 // ChangeRequestsMenu.jsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Server,
   HardDrive,
-  Wifi, // Changed from Network
+  Wifi,
   Shield,
   LayoutDashboard,
   ClipboardCheck,
@@ -20,6 +21,8 @@ const CreateRequest = ({ TriangleRight, TriangleDown }) => {
   });
   const [isOpen, setIsOpen] = useState(false);
 
+  const navigate = useNavigate(); // ✅ FIX: Now inside the component
+
   const changeRequestCategories = {
     ec2: {
       icon: <Server className="w-4 h-4" />,
@@ -34,9 +37,8 @@ const CreateRequest = ({ TriangleRight, TriangleDown }) => {
       ],
     },
     vpc: {
-      icon: <Wifi className="w-4 h-4" />, // Changed from Network
+      icon: <Wifi className="w-4 h-4" />,
       label: "VPC Builder",
-
       items: [
         "Create VPC",
         "Create Subnets (public/private)",
@@ -99,8 +101,11 @@ const CreateRequest = ({ TriangleRight, TriangleDown }) => {
   };
 
   const handleChangeRequestClick = (category, item) => {
-    console.log(`Selected: ${category} - ${item}`);
-    // Add navigation or API call here if needed
+    if (category === "EC2 Manager" && item === "Launch EC2 instance") {
+      navigate("/dashboard/ec2/launch"); // ✅ navigate works now
+    } else {
+      console.log(`Selected: ${category} - ${item}`);
+    }
   };
 
   return (

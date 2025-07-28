@@ -84,7 +84,7 @@ const Sidebar = () => {
               {openMenus.requestDetails && (
                 <div className="ml-7 space-y-1">
                   <Link
-                    to="/request-details"
+                    to="/dashboard/request-details"
                     className="block text-sm text-blue-100 hover:text-white hover:bg-blue-600 hover:bg-opacity-30 px-2 py-1 rounded transition-colors"
                   >
                     View Details
@@ -116,7 +116,7 @@ const Sidebar = () => {
               {openMenus.userManual && (
                 <div className="ml-7 space-y-1">
                   <Link
-                    to="/usermanual"
+                    to="/dashboard/usermanual"
                     className="block text-sm text-blue-100 hover:text-white hover:bg-blue-600 hover:bg-opacity-30 px-2 py-1 rounded transition-colors"
                   >
                     View Manual
