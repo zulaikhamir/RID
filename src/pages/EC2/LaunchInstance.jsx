@@ -634,22 +634,66 @@ const LaunchInstance = () => {
                   </button>
                 </div>
               )}
+            </div>
+            {/* Configuration Summary */}
+            {activeTab === "preview" && ( // <-- make sure this matches your tab value
+              <div className="space-y-6">
+                <h3 className="text-lg font-medium text-gray-900">
+                  Block Device Mappings
+                </h3>
 
-              {/* Preview Tab */}
-              {activeTab === "preview" && (
-                <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    Template Configuration Preview
-                  </h3>
-
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <pre className="text-sm text-gray-800 whitespace-pre-wrap overflow-x-auto">
-                      {JSON.stringify(templateData, null, 2)}
-                    </pre>
+                {/* Configuration Summary */}
+                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                  <h4 className="text-lg font-semibold text-gray-900 mb-4">
+                    Configuration Summary
+                  </h4>
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm font-medium text-gray-700">
+                          Template Name
+                        </p>
+                        <p className="text-gray-900">
+                          {templateData.templateName || "Not specified"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-700">
+                          Instance Type
+                        </p>
+                        <p className="text-gray-900">
+                          {templateData.instanceType}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-700">
+                          AMI ID
+                        </p>
+                        <p className="text-gray-900">{templateData.amiId}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-700">
+                          Key Pair
+                        </p>
+                        <p className="text-gray-900">
+                          {templateData.keyPairName || "None"}
+                        </p>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              )}
-            </div>
+
+                {/* JSON Preview */}
+                <div className="bg-gray-900 rounded-xl p-6 mt-6">
+                  <h4 className="text-lg font-semibold text-white mb-4">
+                    JSON Preview
+                  </h4>
+                  <pre className="text-green-400 text-sm overflow-auto max-h-96 bg-gray-800 p-4 rounded-lg">
+                    {JSON.stringify(templateData, null, 2)}
+                  </pre>
+                </div>
+              </div>
+            )}
 
             {/* Footer Actions */}
             <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
@@ -696,5 +740,4 @@ const LaunchInstance = () => {
     </div>
   );
 };
-
 export default LaunchInstance;
