@@ -31,10 +31,10 @@ const Footer = () => {
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
-                  to="/create-request"
+                  to="/createrequest"
                   className="hover:underline text-white/80"
                 >
-                  Create Request
+                  Change Request
                 </Link>
               </li>
               <li>

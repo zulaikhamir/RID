@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { useState } from "react";
 import Header from "./components/header";
 import Sidebar from "./components/sidebar";
-import Budget from "./pages/budget";
+import Budget from "./pages/Budget";
 import CreateRequest from "./pages/CreateRequest";
 import RequestDetailsTable from "./pages/requestdetails";
 import Footer from "./components/footer";
@@ -9,6 +10,7 @@ import UserManual from "./pages/usermanual";
 import "./index.css";
 
 function App() {
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   return (
     <Router>
       {/* Full height layout */}
@@ -18,9 +20,11 @@ function App() {
 
         {/* Main layout with sidebar + content */}
         <div className="flex flex-1">
-          {/* Sidebar: visible on md and above, hidden on small screens */}
-          <aside className="hidden md:block w-64 bg-gray-100 border-r">
-            <Sidebar />
+          <aside className="hidden md:block">
+            <Sidebar
+              isCollapsed={isSidebarCollapsed}
+              setIsCollapsed={setIsSidebarCollapsed}
+            />
           </aside>
 
           {/* Main content: full width on small screens, takes remaining space on md+ */}
@@ -31,7 +35,7 @@ function App() {
                 path="/request-details"
                 element={<RequestDetailsTable />}
               />
-              <Route path="/CreateRequest" element={<CreateRequest />} />
+              <Route path="/createrequest" element={<CreateRequest />} />
               <Route path="/budget" element={<Budget />} />
               <Route path="/usermanual" element={<UserManual />} />
             </Routes>
