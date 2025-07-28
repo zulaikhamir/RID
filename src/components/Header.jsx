@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { Menu, X, Briefcase } from "lucide-react";
+import { Menu, X, CloudCog } from "lucide-react";
 
 const Header = ({ onSignupClick }) => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const Header = ({ onSignupClick }) => {
           <div className="flex-shrink-0">
             <Link to="/" className="flex items-center space-x-2 group">
               <div className="bg-[#181ed4] p-2 rounded-lg group-hover:shadow-lg transition-shadow">
-                <Briefcase className="h-6 w-6 text-white" />
+                <CloudCog className="h-6 w-6 text-white" />
               </div>
               <span className="text-2xl font-bold text-[#181ed4]">RID</span>
             </Link>
