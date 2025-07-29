@@ -64,8 +64,9 @@ function App() {
               <DashboardHeader />
               <div className="flex flex-1">
                 {/* Sidebar */}
-                <aside className="hidden md:block w-64 bg-[#181ed4] text-white">
-                  <div className="h-full">
+                <aside className="hidden md:block  bg-[#181ed4] text-white">
+                  {/* w-64 was making it static width */}
+                  <div className="">
                     <Sidebar
                       isCollapsed={isSidebarCollapsed}
                       setIsCollapsed={setIsSidebarCollapsed}

@@ -10,6 +10,13 @@ import {
 } from "lucide-react";
 
 const LaunchInstance = () => {
+  // Scroll to top when switching to preview tab
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    if (tabId === "preview") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
   const [templateData, setTemplateData] = useState({
     templateName: "",
     templateDescription: "",
@@ -194,7 +201,7 @@ const LaunchInstance = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-white p-6">
+    <div className=" bg-white">
       {/* Fixed background color for create instance page */}
       <div className="max-w-6xl mx-auto">
         {/* Header */}
@@ -898,14 +905,14 @@ const LaunchInstance = () => {
 
                   {/* JSON Preview */}
                   {/* JSON Preview */}
-                  <div className="bg-gray-900 rounded-xl p-6 mt-6">
+                  {/* <div className="bg-gray-900 rounded-xl p-6 mt-6">
                     <h4 className="text-lg font-semibold text-white mb-4">
                       JSON Preview
                     </h4>
                     <pre className="text-green-400 text-sm overflow-auto max-h-96 bg-gray-800 p-4 rounded-lg">
                       {JSON.stringify(templateData, null, 2)}
                     </pre>
-                  </div>
+                  </div> */}
                 </div>
               )}
             </div>
@@ -929,7 +936,7 @@ const LaunchInstance = () => {
                     type={"button"}
                     onClick={
                       activeTab === "basic"
-                        ? () => setActiveTab("preview")
+                        ? () => handleTabChange("preview")
                         : handleSubmit
                     }
                     disabled={
@@ -952,7 +959,7 @@ const LaunchInstance = () => {
                     ) : (
                       <>
                         <Save className="h-4 w-4" />
-                        <span>Launch EC2 Instance</span>
+                        <span>Submit</span>
                       </>
                     )}
                   </button>
