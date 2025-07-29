@@ -803,7 +803,9 @@ const LaunchInstance = () => {
                       Configuration Summary
                     </h4>
                     <div className="space-y-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
+                        {" "}
+                        {/* preview 5 columns */}
                         <div>
                           <p className="text-sm font-medium text-gray-700">
                             Template Name
