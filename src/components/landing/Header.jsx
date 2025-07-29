@@ -38,7 +38,7 @@ const Header = ({ onSignupClick = () => {} }) => {
   ];
 
   const handleLoginClick = () => {
-    navigate("/dashboard/request-details");
+    navigate("/dashboard/request-details");//instead of this just link it only to dashboard when dashboard is made.
   };
 
   return (

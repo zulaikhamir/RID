@@ -17,6 +17,7 @@ const LaunchInstance = () => {
     amiId: "ami-0989fb15ce71ba39e", // Amazon Linux 2 in eu-north-1
     keyPairName: "",
     securityGroups: [""],
+    vpcId: "",
     subnetId: "",
     iamInstanceProfile: "",
     userData: "",
@@ -43,9 +44,74 @@ const LaunchInstance = () => {
     ],
   });
 
+  const [selectedRegion, setSelectedRegion] = useState("eu-north-1");
   const [activeTab, setActiveTab] = useState("basic");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // Mock data for dropdowns
+  const regions = [
+    { value: "us-east-1", label: "US East (N. Virginia)" },
+    { value: "us-west-2", label: "US West (Oregon)" },
+    { value: "eu-north-1", label: "Europe (Stockholm)" },
+    { value: "eu-west-1", label: "Europe (Ireland)" },
+    { value: "ap-south-1", label: "Asia Pacific (Mumbai)" },
+  ];
+
+  const amis = [
+    { value: "ami-0989fb15ce71ba39e", label: "Amazon Linux 2023 AMI" },
+    { value: "ami-0abcdef1234567890", label: "Ubuntu Server 22.04 LTS" },
+    { value: "ami-0fedcba0987654321", label: "Windows Server 2022" },
+    { value: "ami-0123456789abcdef0", label: "Red Hat Enterprise Linux 9" },
+  ];
+
+  const keyPairs = [
+    { value: "", label: "Select a key pair" },
+    { value: "my-key-pair", label: "my-key-pair" },
+    { value: "prod-key", label: "prod-key" },
+    { value: "dev-key", label: "dev-key" },
+    { value: "test-key", label: "test-key" },
+  ];
+
+  const vpcs = [
+    { value: "", label: "Select a VPC" },
+    {
+      value: "vpc-0123456789abcdef0",
+      label: "vpc-0123456789abcdef0 (default)",
+    },
+    {
+      value: "vpc-0abcdef1234567890",
+      label: "vpc-0abcdef1234567890 (prod-vpc)",
+    },
+    {
+      value: "vpc-0fedcba0987654321",
+      label: "vpc-0fedcba0987654321 (dev-vpc)",
+    },
+  ];
+
+  const subnets = [
+    { value: "", label: "Select a subnet" },
+    {
+      value: "subnet-0123456789abcdef0",
+      label: "subnet-0123456789abcdef0 (eu-north-1a)",
+    },
+    {
+      value: "subnet-0abcdef1234567890",
+      label: "subnet-0abcdef1234567890 (eu-north-1b)",
+    },
+    {
+      value: "subnet-0fedcba0987654321",
+      label: "subnet-0fedcba0987654321 (eu-north-1c)",
+    },
+  ];
+
+  const securityGroupOptions = [
+    { value: "", label: "Select security groups" },
+    { value: "sg-0123456789abcdef0", label: "sg-0123456789abcdef0 (default)" },
+    { value: "sg-0abcdef1234567890", label: "sg-0abcdef1234567890 (web-sg)" },
+    { value: "sg-0fedcba0987654321", label: "sg-0fedcba0987654321 (app-sg)" },
+    { value: "sg-0987654321fedcba0", label: "sg-0987654321fedcba0 (db-sg)" },
+  ];
 
   const instanceTypes = [
     "t3.nano",
@@ -66,7 +132,6 @@ const LaunchInstance = () => {
   ];
 
   const availabilityZones = ["eu-north-1a", "eu-north-1b", "eu-north-1c"];
-
   const volumeTypes = ["gp3", "gp2", "io1", "io2", "st1", "sc1"];
 
   const handleInputChange = (field, value) => {
@@ -124,8 +189,6 @@ const LaunchInstance = () => {
 
   const tabs = [
     { id: "basic", label: "Basic Info", icon: <Server className="w-4 h-4" /> },
-    { id: "storage", label: "Storage", icon: <Copy className="w-4 h-4" /> },
-    { id: "advanced", label: "Advanced", icon: <Settings className="w-4 h-4" /> },
     { id: "preview", label: "Preview", icon: <Eye className="w-4 h-4" /> },
   ];
 
@@ -135,17 +198,37 @@ const LaunchInstance = () => {
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
           <div className="p-6 border-b border-gray-200">
-            <div className="flex items-center space-x-3">
-              <div className="bg-blue-600 p-2 rounded-lg">
-                <Server className="h-6 w-6 text-white" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="bg-blue-600 p-2 rounded-lg">
+                  <Server className="h-6 w-6 text-white" />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-bold text-gray-900">
+                    Deploy EC2
+                  </h1>
+                  <p className="text-gray-600">
+                    EC2 | {selectedRegion} | Configure your EC2 launch template
+                  </p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Create Launch Template
-                </h1>
-                <p className="text-gray-600">
-                  EC2 | eu-north-1 | Configure your EC2 launch template
-                </p>
+
+              {/* Region Selector */}
+              <div className="flex items-center space-x-2">
+                <label className="text-sm font-medium text-gray-700">
+                  Region:
+                </label>
+                <select
+                  value={selectedRegion}
+                  onChange={(e) => setSelectedRegion(e.target.value)}
+                  className="p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                >
+                  {regions.map((region) => (
+                    <option key={region.value} value={region.value}>
+                      {region.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
@@ -188,448 +271,501 @@ const LaunchInstance = () => {
             <div className="p-6">
               {/* Basic Info Tab */}
               {activeTab === "basic" && (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Template Name *
-                      </label>
-                      <input
-                        type="text"
-                        value={templateData.templateName}
-                        onChange={(e) =>
-                          handleInputChange("templateName", e.target.value)
-                        }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                        placeholder="my-launch-template"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Instance Type *
-                      </label>
-                      <select
-                        value={templateData.instanceType}
-                        onChange={(e) =>
-                          handleInputChange("instanceType", e.target.value)
-                        }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                      >
-                        {instanceTypes.map((type) => (
-                          <option key={type} value={type}>
-                            {type}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        AMI ID *
-                      </label>
-                      <input
-                        type="text"
-                        value={templateData.amiId}
-                        onChange={(e) =>
-                          handleInputChange("amiId", e.target.value)
-                        }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                        placeholder="ami-0989fb15ce71ba39e"
-                        required
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Key Pair Name
-                      </label>
-                      <input
-                        type="text"
-                        value={templateData.keyPairName}
-                        onChange={(e) =>
-                          handleInputChange("keyPairName", e.target.value)
-                        }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                        placeholder="my-key-pair"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Subnet ID
-                      </label>
-                      <input
-                        type="text"
-                        value={templateData.subnetId}
-                        onChange={(e) =>
-                          handleInputChange("subnetId", e.target.value)
-                        }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                        placeholder="subnet-xxxxxxxxx"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Availability Zone
-                      </label>
-                      <select
-                        value={templateData.placement.availabilityZone}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "placement.availabilityZone",
-                            e.target.value
-                          )
-                        }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                      >
-                        {availabilityZones.map((zone) => (
-                          <option key={zone} value={zone}>
-                            {zone}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
+                <div className="space-y-8">
+                  {/* Template Information */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Template Description
-                    </label>
-                    <textarea
-                      value={templateData.templateDescription}
-                      onChange={(e) =>
-                        handleInputChange("templateDescription", e.target.value)
-                      }
-                      rows={3}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                      placeholder="Description of your launch template..."
-                    />
-                  </div>
-
-                  {/* Security Groups */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Security Groups
-                    </label>
-                    {templateData.securityGroups.map((sg, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center space-x-2 mb-2"
-                      >
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Template Information
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Template Name *
+                        </label>
                         <input
                           type="text"
-                          value={sg}
+                          value={templateData.templateName}
                           onChange={(e) =>
-                            handleArrayChange(
-                              "securityGroups",
-                              index,
-                              null,
+                            handleInputChange("templateName", e.target.value)
+                          }
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                          placeholder="my-launch-template"
+                          required
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Instance Type *
+                        </label>
+                        <select
+                          value={templateData.instanceType}
+                          onChange={(e) =>
+                            handleInputChange("instanceType", e.target.value)
+                          }
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        >
+                          {instanceTypes.map((type) => (
+                            <option key={type} value={type}>
+                              {type}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* <div className="md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Template Description
+                        </label>
+                        <textarea
+                          value={templateData.templateDescription}
+                          onChange={(e) =>
+                            handleInputChange("templateDescription", e.target.value)
+                          }
+                          rows={3}
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                          placeholder="Description of your launch template..."
+                        />
+                      </div> */}
+                    </div>
+                  </div>
+
+                  {/* Instance Configuration */}
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Instance Configuration
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          AMI ID *
+                        </label>
+                        <select
+                          value={templateData.amiId}
+                          onChange={(e) =>
+                            handleInputChange("amiId", e.target.value)
+                          }
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                          required
+                        >
+                          {amis.map((ami) => (
+                            <option key={ami.value} value={ami.value}>
+                              {ami.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Key Pair Name
+                        </label>
+                        <select
+                          value={templateData.keyPairName}
+                          onChange={(e) =>
+                            handleInputChange("keyPairName", e.target.value)
+                          }
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        >
+                          {keyPairs.map((keyPair) => (
+                            <option key={keyPair.value} value={keyPair.value}>
+                              {keyPair.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Availability Zone
+                        </label>
+                        <select
+                          value={templateData.placement.availabilityZone}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "placement.availabilityZone",
                               e.target.value
                             )
                           }
-                          className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                          placeholder="sg-xxxxxxxxx"
-                        />
-                        {templateData.securityGroups.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              removeFromArray("securityGroups", index)
-                            }
-                            className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
-                          >
-                            Remove
-                          </button>
-                        )}
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        >
+                          {availabilityZones.map((zone) => (
+                            <option key={zone} value={zone}>
+                              {zone}
+                            </option>
+                          ))}
+                        </select>
                       </div>
-                    ))}
-                    <button
-                      type="button"
-                      onClick={() => addToArray("securityGroups", "")}
-                      className="text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm"
-                    >
-                      + Add Security Group
-                    </button>
+                    </div>
                   </div>
-                </div>
-              )}
 
-              {/* Storage Tab */}
-              {activeTab === "storage" && (
-                <div className="space-y-6">
-                  <h3 className="text-lg font-medium text-gray-900">
-                    Block Device Mappings
-                  </h3>
+                  {/* Network Configuration */}
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Network Configuration
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          VPC
+                        </label>
+                        <select
+                          value={templateData.vpcId}
+                          onChange={(e) =>
+                            handleInputChange("vpcId", e.target.value)
+                          }
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        >
+                          {vpcs.map((vpc) => (
+                            <option key={vpc.value} value={vpc.value}>
+                              {vpc.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                  {templateData.blockDeviceMappings.map((device, index) => (
-                    <div
-                      key={index}
-                      className="border border-gray-200 rounded-lg p-4"
-                    >
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Device Name
-                          </label>
-                          <input
-                            type="text"
-                            value={device.deviceName}
-                            onChange={(e) =>
-                              handleArrayChange(
-                                "blockDeviceMappings",
-                                index,
-                                "deviceName",
-                                e.target.value
-                              )
-                            }
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                          />
-                        </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Subnet
+                        </label>
+                        <select
+                          value={templateData.subnetId}
+                          onChange={(e) =>
+                            handleInputChange("subnetId", e.target.value)
+                          }
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        >
+                          {subnets.map((subnet) => (
+                            <option key={subnet.value} value={subnet.value}>
+                              {subnet.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
 
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Volume Type
-                          </label>
+                    {/* Security Groups */}
+                    <div className="mt-6">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Security Groups
+                      </label>
+                      {templateData.securityGroups.map((sg, index) => (
+                        <div
+                          key={index}
+                          className="flex items-center space-x-2 mb-2"
+                        >
                           <select
-                            value={device.volumeType}
+                            value={sg}
                             onChange={(e) =>
                               handleArrayChange(
-                                "blockDeviceMappings",
+                                "securityGroups",
                                 index,
-                                "volumeType",
+                                null,
                                 e.target.value
                               )
                             }
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            className="flex-1 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                           >
-                            {volumeTypes.map((type) => (
-                              <option key={type} value={type}>
-                                {type}
+                            {securityGroupOptions.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
                               </option>
                             ))}
                           </select>
+                          {templateData.securityGroups.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeFromArray("securityGroups", index)
+                              }
+                              className="px-3 py-2 text-red-600 hover:bg-red-50 rounded-lg"
+                            >
+                              Remove
+                            </button>
+                          )}
                         </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Size (GB)
-                          </label>
-                          <input
-                            type="number"
-                            value={device.volumeSize}
-                            onChange={(e) =>
-                              handleArrayChange(
-                                "blockDeviceMappings",
-                                index,
-                                "volumeSize",
-                                parseInt(e.target.value)
-                              )
-                            }
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                            min="1"
-                            max="16384"
-                          />
-                        </div>
-                      </div>
-
-                      <div className="mt-4 flex items-center space-x-6">
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id={`deleteOnTermination-${index}`}
-                            checked={device.deleteOnTermination}
-                            onChange={(e) =>
-                              handleArrayChange(
-                                "blockDeviceMappings",
-                                index,
-                                "deleteOnTermination",
-                                e.target.checked
-                              )
-                            }
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
-                          />
-                          <label
-                            htmlFor={`deleteOnTermination-${index}`}
-                            className="ml-2 text-sm text-gray-700"
-                          >
-                            Delete on termination
-                          </label>
-                        </div>
-
-                        <div className="flex items-center">
-                          <input
-                            type="checkbox"
-                            id={`encrypted-${index}`}
-                            checked={device.encrypted}
-                            onChange={(e) =>
-                              handleArrayChange(
-                                "blockDeviceMappings",
-                                index,
-                                "encrypted",
-                                e.target.checked
-                              )
-                            }
-                            className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
-                          />
-                          <label
-                            htmlFor={`encrypted-${index}`}
-                            className="ml-2 text-sm text-gray-700"
-                          >
-                            Encrypted
-                          </label>
-                        </div>
-
-                        {templateData.blockDeviceMappings.length > 1 && (
-                          <button
-                            type="button"
-                            onClick={() =>
-                              removeFromArray("blockDeviceMappings", index)
-                            }
-                            className="text-red-600 hover:bg-red-50 px-3 py-1 rounded text-sm"
-                          >
-                            Remove Device
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      addToArray("blockDeviceMappings", {
-                        deviceName: "/dev/sdf",
-                        volumeType: "gp3",
-                        volumeSize: 10,
-                        deleteOnTermination: true,
-                        encrypted: false,
-                      })
-                    }
-                    className="text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg text-sm border border-blue-600"
-                  >
-                    + Add Block Device
-                  </button>
-                </div>
-              )}
-
-              {/* Advanced Tab */}
-              {activeTab === "advanced" && (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        IAM Instance Profile
-                      </label>
-                      <input
-                        type="text"
-                        value={templateData.iamInstanceProfile}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "iamInstanceProfile",
-                            e.target.value
-                          )
-                        }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                        placeholder="my-instance-profile"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Shutdown Behavior
-                      </label>
-                      <select
-                        value={templateData.shutdownBehavior}
-                        onChange={(e) =>
-                          handleInputChange("shutdownBehavior", e.target.value)
-                        }
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => addToArray("securityGroups", "")}
+                        className="text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg text-sm"
                       >
-                        <option value="stop">Stop</option>
-                        <option value="terminate">Terminate</option>
-                      </select>
+                        + Add Security Group
+                      </button>
                     </div>
                   </div>
+
+                  {/* Storage Configuration */}
+                  <div>
+                    <h3 className="text-lg font-medium text-gray-900 mb-4">
+                      Storage Configuration
+                    </h3>
+                    {templateData.blockDeviceMappings.map((device, index) => (
+                      <div
+                        key={index}
+                        className="border border-gray-200 rounded-lg p-4 mb-4"
+                      >
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Device Name
+                            </label>
+                            <input
+                              type="text"
+                              value={device.deviceName}
+                              onChange={(e) =>
+                                handleArrayChange(
+                                  "blockDeviceMappings",
+                                  index,
+                                  "deviceName",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            />
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Volume Type
+                            </label>
+                            <select
+                              value={device.volumeType}
+                              onChange={(e) =>
+                                handleArrayChange(
+                                  "blockDeviceMappings",
+                                  index,
+                                  "volumeType",
+                                  e.target.value
+                                )
+                              }
+                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                            >
+                              {volumeTypes.map((type) => (
+                                <option key={type} value={type}>
+                                  {type}
+                                </option>
+                              ))}
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Size (GB)
+                            </label>
+                            <input
+                              type="number"
+                              value={device.volumeSize}
+                              onChange={(e) =>
+                                handleArrayChange(
+                                  "blockDeviceMappings",
+                                  index,
+                                  "volumeSize",
+                                  parseInt(e.target.value)
+                                )
+                              }
+                              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                              min="1"
+                              max="16384"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="mt-4 flex items-center space-x-6">
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id={`deleteOnTermination-${index}`}
+                              checked={device.deleteOnTermination}
+                              onChange={(e) =>
+                                handleArrayChange(
+                                  "blockDeviceMappings",
+                                  index,
+                                  "deleteOnTermination",
+                                  e.target.checked
+                                )
+                              }
+                              className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
+                            />
+                            <label
+                              htmlFor={`deleteOnTermination-${index}`}
+                              className="ml-2 text-sm text-gray-700"
+                            >
+                              Delete on termination
+                            </label>
+                          </div>
+
+                          <div className="flex items-center">
+                            <input
+                              type="checkbox"
+                              id={`encrypted-${index}`}
+                              checked={device.encrypted}
+                              onChange={(e) =>
+                                handleArrayChange(
+                                  "blockDeviceMappings",
+                                  index,
+                                  "encrypted",
+                                  e.target.checked
+                                )
+                              }
+                              className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
+                            />
+                            <label
+                              htmlFor={`encrypted-${index}`}
+                              className="ml-2 text-sm text-gray-700"
+                            >
+                              Encrypted
+                            </label>
+                          </div>
+
+                          {templateData.blockDeviceMappings.length > 1 && (
+                            <button
+                              type="button"
+                              onClick={() =>
+                                removeFromArray("blockDeviceMappings", index)
+                              }
+                              className="text-red-600 hover:bg-red-50 px-3 py-1 rounded text-sm"
+                            >
+                              Remove Device
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        addToArray("blockDeviceMappings", {
+                          deviceName: "/dev/sdf",
+                          volumeType: "gp3",
+                          volumeSize: 10,
+                          deleteOnTermination: true,
+                          encrypted: false,
+                        })
+                      }
+                      className="text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg text-sm border border-blue-600"
+                    >
+                      + Add Block Device
+                    </button>
+                  </div>
+
+                  {/* Advanced Options */}
+                  {/* <div> */}
+                  {/* <h3 className="text-lg font-medium text-gray-900 mb-4">Advanced Options</h3> */}
+                  {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> */}
+                  {/* <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          IAM Instance Profile
+                        </label>
+                        <input
+                          type="text"
+                          value={templateData.iamInstanceProfile}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "iamInstanceProfile",
+                              e.target.value
+                            )
+                          }
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                          placeholder="my-instance-profile"
+                        />
+                      </div> */}
+
+                  {/* <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Shutdown Behavior
+                        </label>
+                        <select
+                          value={templateData.shutdownBehavior}
+                          onChange={(e) =>
+                            handleInputChange("shutdownBehavior", e.target.value)
+                          }
+                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                        >
+                          <option value="stop">Stop</option>
+                          <option value="terminate">Terminate</option>
+                        </select>
+                      </div> */}
+                  {/* </div> */}
 
                   {/* Checkboxes */}
-                  <div className="space-y-4">
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="monitoring"
-                        checked={templateData.monitoring}
-                        onChange={(e) =>
-                          handleInputChange("monitoring", e.target.checked)
-                        }
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
-                      />
-                      <label
-                        htmlFor="monitoring"
-                        className="ml-2 text-sm text-gray-700"
-                      >
-                        Enable detailed monitoring
-                      </label>
-                    </div>
+                  {/* <div className="mt-4 space-y-4"> */}
+                  {/* <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id="monitoring"
+                          checked={templateData.monitoring}
+                          onChange={(e) =>
+                            handleInputChange("monitoring", e.target.checked)
+                          }
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
+                        />
+                        <label
+                          htmlFor="monitoring"
+                          className="ml-2 text-sm text-gray-700"
+                        >
+                          Enable detailed monitoring
+                        </label>
+                      </div> */}
 
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="ebsOptimized"
-                        checked={templateData.ebsOptimized}
-                        onChange={(e) =>
-                          handleInputChange("ebsOptimized", e.target.checked)
-                        }
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
-                      />
-                      <label
-                        htmlFor="ebsOptimized"
-                        className="ml-2 text-sm text-gray-700"
-                      >
-                        EBS-optimized instance
-                      </label>
-                    </div>
+                  {/* <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id="ebsOptimized"
+                          checked={templateData.ebsOptimized}
+                          onChange={(e) =>
+                            handleInputChange("ebsOptimized", e.target.checked)
+                          }
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
+                        />
+                        <label
+                          htmlFor="ebsOptimized"
+                          className="ml-2 text-sm text-gray-700"
+                        >
+                          EBS-optimized instance
+                        </label>
+                      </div> */}
 
-                    <div className="flex items-center">
-                      <input
-                        type="checkbox"
-                        id="terminationProtection"
-                        checked={templateData.terminationProtection}
-                        onChange={(e) =>
-                          handleInputChange(
-                            "terminationProtection",
-                            e.target.checked
-                          )
-                        }
-                        className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
-                      />
-                      <label
-                        htmlFor="terminationProtection"
-                        className="ml-2 text-sm text-gray-700"
-                      >
-                        Enable termination protection
-                      </label>
-                    </div>
-                  </div>
+                  {/* <div className="flex items-center">
+                        <input
+                          type="checkbox"
+                          id="terminationProtection"
+                          checked={templateData.terminationProtection}
+                          onChange={(e) =>
+                            handleInputChange(
+                              "terminationProtection",
+                              e.target.checked
+                            )
+                          }
+                          className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
+                        />
+                        <label
+                          htmlFor="terminationProtection"
+                          className="ml-2 text-sm text-gray-700"
+                        >
+                          Enable termination protection
+                        </label>
+                      </div> */}
+                  {/* </div> */}
 
                   {/* User Data */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      User Data Script
-                    </label>
-                    <textarea
-                      value={templateData.userData}
-                      onChange={(e) =>
-                        handleInputChange("userData", e.target.value)
-                      }
-                      rows={6}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent font-mono text-sm"
-                      placeholder="#!/bin/bash&#10;yum update -y&#10;# Add your startup script here..."
-                    />
-                  </div>
+                  {/* <div className="mt-6">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        User Data Script
+                      </label>
+                      <textarea
+                        value={templateData.userData}
+                        onChange={(e) =>
+                          handleInputChange("userData", e.target.value)
+                        }
+                        rows={6}
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent font-mono text-sm"
+                        placeholder="#!/bin/bash&#10;yum update -y&#10;# Add your startup script here..."
+                      />
+                    </div> */}
                 </div>
+                // </div>
               )}
 
               {/* Preview Tab */}
@@ -676,6 +812,22 @@ const LaunchInstance = () => {
                             {templateData.keyPairName || "None"}
                           </p>
                         </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-700">
+                            VPC
+                          </p>
+                          <p className="text-gray-900">
+                            {templateData.vpcId || "Default"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-700">
+                            Subnet
+                          </p>
+                          <p className="text-gray-900">
+                            {templateData.subnetId || "None"}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -697,7 +849,7 @@ const LaunchInstance = () => {
             <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 rounded-b-lg">
               <div className="flex justify-between items-center">
                 <div className="text-sm text-gray-500">
-                  Region: eu-north-1 | Service: EC2
+                  Region: {selectedRegion} | Service: EC2
                 </div>
 
                 <div className="flex space-x-3">
@@ -709,23 +861,33 @@ const LaunchInstance = () => {
                   </button>
 
                   <button
-                    type="submit"
+                    type={"button"}
+                    onClick={
+                      activeTab === "basic"
+                        ? () => setActiveTab("preview")
+                        : handleSubmit
+                    }
                     disabled={
-                      isLoading ||
+                      (activeTab === "preview" && isLoading) ||
                       !templateData.templateName ||
                       !templateData.amiId
                     }
                     className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center space-x-2"
                   >
-                    {isLoading ? (
+                    {activeTab === "preview" && isLoading ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                        <span>Creating...</span>
+                        <span>Launching...</span>
+                      </>
+                    ) : activeTab === "basic" ? (
+                      <>
+                        <Eye className="h-4 w-4" />
+                        <span>Next</span>
                       </>
                     ) : (
                       <>
                         <Save className="h-4 w-4" />
-                        <span>Create Launch Template</span>
+                        <span>Launch EC2 Instance</span>
                       </>
                     )}
                   </button>
