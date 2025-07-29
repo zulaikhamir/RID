@@ -63,13 +63,18 @@ function App() {
             <div className="flex flex-col min-h-screen">
               <DashboardHeader />
               <div className="flex flex-1">
-                <aside className="hidden md:block">
-                  <Sidebar
-                    isCollapsed={isSidebarCollapsed}
-                    setIsCollapsed={setIsSidebarCollapsed}
-                  />
+                {/* Sidebar */}
+                <aside className="hidden md:block w-64 bg-[#181ed4] text-white">
+                  <div className="h-full">
+                    <Sidebar
+                      isCollapsed={isSidebarCollapsed}
+                      setIsCollapsed={setIsSidebarCollapsed}
+                    />
+                  </div>
                 </aside>
-                <main className="flex-1 p-4">
+
+                {/* Main content */}
+                <main className="flex-1 p-4 bg-white">
                   <Routes>
                     <Route
                       path=""
