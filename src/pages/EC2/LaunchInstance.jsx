@@ -19,6 +19,7 @@ const LaunchInstance = () => {
     securityGroups: [""],
     vpcId: "",
     subnetId: "",
+    autoAssignPublicIp: "",
     iamInstanceProfile: "",
     userData: "",
     monitoring: false,
@@ -194,6 +195,7 @@ const LaunchInstance = () => {
 
   return (
     <div className="min-h-screen bg-white p-6">
+      {/* Fixed background color for create instance page */}
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-6">
@@ -493,6 +495,26 @@ const LaunchInstance = () => {
                         + Add Security Group
                       </button>
                     </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Auto-assign public IP
+                    </label>
+                    <select
+                      value={templateData.autoAssignPublicIp}
+                      onChange={(e) =>
+                        handleInputChange("autoAssignPublicIp", e.target.value)
+                      }
+                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                    >
+                      <option value="">Use subnet setting (default)</option>
+                      <option value="enable">Enable</option>
+                      <option value="disable">Disable</option>
+                    </select>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Enable to automatically assign a public IP address to
+                      instances launched from this template
+                    </p>
                   </div>
 
                   {/* Storage Configuration */}
@@ -828,10 +850,51 @@ const LaunchInstance = () => {
                             {templateData.subnetId || "None"}
                           </p>
                         </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-700">
+                            Availability Zone
+                          </p>
+                          <p className="text-gray-900">
+                            {templateData.placement.availabilityZone}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-700">
+                            Security Groups
+                          </p>
+                          <p className="text-gray-900">
+                            {templateData.securityGroups.filter((sg) => sg)
+                              .length > 0
+                              ? templateData.securityGroups
+                                  .filter((sg) => sg)
+                                  .join(", ")
+                              : "None"}
+                          </p>
+                        </div>
+                        <div className="md:col-span-2">
+                          <p className="text-sm font-medium text-gray-700">
+                            Storage
+                          </p>
+                          <p className="text-gray-900">
+                            {templateData.blockDeviceMappings.map(
+                              (device, index) => (
+                                <span key={index}>
+                                  {device.deviceName}: {device.volumeSize}GB (
+                                  {device.volumeType})
+                                  {index <
+                                  templateData.blockDeviceMappings.length - 1
+                                    ? ", "
+                                    : ""}
+                                </span>
+                              )
+                            )}
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
 
+                  {/* JSON Preview */}
                   {/* JSON Preview */}
                   <div className="bg-gray-900 rounded-xl p-6 mt-6">
                     <h4 className="text-lg font-semibold text-white mb-4">

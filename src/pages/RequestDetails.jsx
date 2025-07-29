@@ -13,6 +13,19 @@ const defaultData = [
     status: "Pending",
     requestedOn: "2025-07-20",
     priority: "High",
+    startDate: "2025-07-21",
+    approvalDetails: {
+      first: {
+        entity: "Team Lead",
+        date: "2025-07-21",
+        status: "Approved",
+      },
+      second: {
+        entity: "Project Manager",
+        date: "",
+        status: "Pending",
+      },
+    },
   },
   {
     requestId: "RID-002",
@@ -23,6 +36,19 @@ const defaultData = [
     status: "In Progress",
     requestedOn: "2025-07-01",
     priority: "Medium",
+    startDate: "2025-07-02",
+    approvalDetails: {
+      first: {
+        entity: "Team Lead",
+        date: "2025-07-01",
+        status: "Approved",
+      },
+      second: {
+        entity: "Project Manager",
+        date: "2025-07-02",
+        status: "Approved",
+      },
+    },
   },
   {
     requestId: "RID-003",
@@ -33,37 +59,44 @@ const defaultData = [
     status: "Completed",
     requestedOn: "2025-10-18",
     priority: "Low",
+    startDate: "2025-10-20",
+    approvalDetails: {
+      first: {
+        entity: "Team Lead",
+        date: "2025-10-18",
+        status: "Approved",
+      },
+      second: {
+        entity: "Project Manager",
+        date: "2025-10-19",
+        status: "Approved",
+      },
+    },
   },
   {
     requestId: "RID-004",
-    projectName: "Load Balancer Setup",
+    projectName: "Security Group Configuration",
     changeDetails:
-      "Set up an application load balancer with sticky sessions and SSL termination.",
-    requestedBy: "Sarah Wilson",
-    status: "Pending",
-    requestedOn: "2025-12-31",
-    priority: "High",
-  },
-  {
-    requestId: "RID-005",
-    projectName: "Database Migration",
-    changeDetails:
-      "Migrate on-premises database to Amazon RDS with minimal downtime strategy.",
-    requestedBy: "Mike Johnson",
-    status: "In Progress",
-    requestedOn: "2025-11-19",
-    priority: "Medium",
-  },
-  {
-    requestId: "RID-006",
-    projectName: "Backup Configuration",
-    changeDetails:
-      "Implement daily EBS snapshots and enable cross-region backup for disaster recovery.",
-    requestedBy: "Lisa Chen",
+      "Update security rules to follow CIS benchmarks and enable logging for all traffic.",
+    requestedBy: "Elsa",
     status: "Completed",
-    requestedOn: "2025-07-17",
+    requestedOn: "2025-10-18",
     priority: "Low",
+    startDate: "2025-10-20",
+    approvalDetails: {
+      first: {
+        entity: "Team Lead",
+        date: "2025-10-18",
+        status: "Approved",
+      },
+      second: {
+        entity: "Project Manager",
+        date: "2025-10-19",
+        status: "Approved",
+      },
+    },
   },
+  // ...continue for others as needed
 ];
 
 // Helper: Search filter, status, priority
@@ -173,7 +206,7 @@ const ColumnFilter = ({
 };
 
 const RequestDetailsTable = () => {
-  const [visibleRows, setVisibleRows] = useState(3);
+  const [visibleRows, setVisibleRows] = useState(2);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [priorityFilter, setPriorityFilter] = useState("");
