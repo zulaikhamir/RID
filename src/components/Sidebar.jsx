@@ -3,8 +3,7 @@ import { useState } from "react";
 import CreateRequest from "../pages/CreateRequest";
 import Budget from "../pages/Budget";
 
-const Sidebar = () => {
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+const Sidebar = ({ isCollapsed, setIsCollapsed }) => {
   const [openMenus, setOpenMenus] = useState({
     requestDetails: false,
     userManual: false,
@@ -62,8 +61,8 @@ const Sidebar = () => {
   };
 
   const toggleSidebar = () => {
-    setIsSidebarCollapsed(!isSidebarCollapsed);
-    if (!isSidebarCollapsed) {
+    setIsCollapsed(!isCollapsed);
+    if (!isCollapsed) {
       setOpenMenus({
         requestDetails: false,
         userManual: false,
@@ -73,9 +72,9 @@ const Sidebar = () => {
 
   // Handle icon clicks when sidebar is collapsed
   const handleCollapsedIconClick = (menu) => {
-    if (isSidebarCollapsed) {
+    if (isCollapsed) {
       // Expand sidebar and open the menu
-      setIsSidebarCollapsed(false);
+      setIsCollapsed(false);
       setOpenMenus((prev) => ({
         ...prev,
         [menu]: true,
@@ -88,7 +87,7 @@ const Sidebar = () => {
   return (
     <div
       className={`${
-        isSidebarCollapsed ? "w-16" : "w-64"
+        isCollapsed ? "w-16" : "w-64"
       } h-screen bg-[#181ed4] text-white flex flex-col transition-all duration-300`}
     >
       {/* Collapse/Expand Button */}
@@ -109,7 +108,7 @@ const Sidebar = () => {
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto p-6 space-y-4">
-        {isSidebarCollapsed ? (
+        {isCollapsed ? (
           // Collapsed View - Show Icons Only
           <nav className="flex flex-col gap-6 items-center">
             {/* Request Details Icon */}
