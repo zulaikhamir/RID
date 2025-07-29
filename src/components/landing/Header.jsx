@@ -38,7 +38,7 @@ const Header = ({ onSignupClick = () => {} }) => {
   ];
 
   const handleLoginClick = () => {
-    navigate("/dashboard/");
+    navigate("/dashboard/request-details");
   };
 
   return (
