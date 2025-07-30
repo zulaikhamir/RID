@@ -321,21 +321,6 @@ const LaunchInstance = () => {
                           ))}
                         </select>
                       </div>
-
-                      {/* <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Template Description
-                        </label>
-                        <textarea
-                          value={templateData.templateDescription}
-                          onChange={(e) =>
-                            handleInputChange("templateDescription", e.target.value)
-                          }
-                          rows={3}
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                          placeholder="Description of your launch template..."
-                        />
-                      </div> */}
                     </div>
                   </div>
 
@@ -678,128 +663,12 @@ const LaunchInstance = () => {
                       + Add Block Device
                     </button>
                   </div>
-
-                  {/* Advanced Options */}
-                  {/* <div> */}
-                  {/* <h3 className="text-lg font-medium text-gray-900 mb-4">Advanced Options</h3> */}
-                  {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> */}
-                  {/* <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          IAM Instance Profile
-                        </label>
-                        <input
-                          type="text"
-                          value={templateData.iamInstanceProfile}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "iamInstanceProfile",
-                              e.target.value
-                            )
-                          }
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                          placeholder="my-instance-profile"
-                        />
-                      </div> */}
-
-                  {/* <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Shutdown Behavior
-                        </label>
-                        <select
-                          value={templateData.shutdownBehavior}
-                          onChange={(e) =>
-                            handleInputChange("shutdownBehavior", e.target.value)
-                          }
-                          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                        >
-                          <option value="stop">Stop</option>
-                          <option value="terminate">Terminate</option>
-                        </select>
-                      </div> */}
-                  {/* </div> */}
-
-                  {/* Checkboxes */}
-                  {/* <div className="mt-4 space-y-4"> */}
-                  {/* <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="monitoring"
-                          checked={templateData.monitoring}
-                          onChange={(e) =>
-                            handleInputChange("monitoring", e.target.checked)
-                          }
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
-                        />
-                        <label
-                          htmlFor="monitoring"
-                          className="ml-2 text-sm text-gray-700"
-                        >
-                          Enable detailed monitoring
-                        </label>
-                      </div> */}
-
-                  {/* <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="ebsOptimized"
-                          checked={templateData.ebsOptimized}
-                          onChange={(e) =>
-                            handleInputChange("ebsOptimized", e.target.checked)
-                          }
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
-                        />
-                        <label
-                          htmlFor="ebsOptimized"
-                          className="ml-2 text-sm text-gray-700"
-                        >
-                          EBS-optimized instance
-                        </label>
-                      </div> */}
-
-                  {/* <div className="flex items-center">
-                        <input
-                          type="checkbox"
-                          id="terminationProtection"
-                          checked={templateData.terminationProtection}
-                          onChange={(e) =>
-                            handleInputChange(
-                              "terminationProtection",
-                              e.target.checked
-                            )
-                          }
-                          className="h-4 w-4 text-blue-600 focus:ring-blue-600 border-gray-300 rounded"
-                        />
-                        <label
-                          htmlFor="terminationProtection"
-                          className="ml-2 text-sm text-gray-700"
-                        >
-                          Enable termination protection
-                        </label>
-                      </div> */}
-                  {/* </div> */}
-
-                  {/* User Data */}
-                  {/* <div className="mt-6">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        User Data Script
-                      </label>
-                      <textarea
-                        value={templateData.userData}
-                        onChange={(e) =>
-                          handleInputChange("userData", e.target.value)
-                        }
-                        rows={6}
-                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent font-mono text-sm"
-                        placeholder="#!/bin/bash&#10;yum update -y&#10;# Add your startup script here..."
-                      />
-                    </div> */}
                 </div>
-                // </div>
               )}
 
               {/* Preview Tab */}
               {activeTab === "preview" && (
-                <div className="space-y-6">
+                <div className=" pb-0 mb-0">
                   <h3 className="text-lg font-medium text-gray-900">
                     Template Preview
                   </h3>
@@ -809,7 +678,7 @@ const LaunchInstance = () => {
                     <h4 className="text-lg font-semibold text-gray-900 mb-4">
                       Configuration Summary
                     </h4>
-                    <div className="space-y-4">
+                    <div className="space-y-4 pb-0 mb-0">
                       <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
                         {" "}
                         {/* preview 5 columns */}

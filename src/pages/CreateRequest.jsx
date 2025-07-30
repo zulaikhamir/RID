@@ -29,7 +29,7 @@ const CreateRequest = ({ TriangleRight, TriangleDown }) => {
       label: "EC2 Manager",
       items: [
         "Launch EC2 instance",
-        "Stop/Start/Reboot/Terminate EC2",
+        "Instance management",
         "View instance details",
         "View cost estimation",
         "Modify tags",
@@ -102,7 +102,9 @@ const CreateRequest = ({ TriangleRight, TriangleDown }) => {
 
   const handleChangeRequestClick = (category, item) => {
     if (category === "EC2 Manager" && item === "Launch EC2 instance") {
-      navigate("/dashboard/ec2/launch"); // ✅ navigate works now
+      navigate("/dashboard/ec2/launch");
+    } else if (category === "EC2 Manager" && item === "Instance management") {
+      navigate("/dashboard/ec2/instance-management");
     } else {
       console.log(`Selected: ${category} - ${item}`);
     }

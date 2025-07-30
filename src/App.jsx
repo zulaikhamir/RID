@@ -20,6 +20,7 @@ import RequestDetailsTable from "./pages/RequestDetails";
 import UserManual from "./pages/UserManual";
 import LaunchInstance from "./pages/EC2/LaunchInstance";
 import DashboardFooter from "./components/Footer";
+import InstanceManagement from "./pages/EC2/Instance management";
 
 import "./index.css";
 
@@ -89,6 +90,10 @@ function App() {
                     <Route path="budget" element={<Budget />} />
                     <Route path="usermanual" element={<UserManual />} />
                     <Route path="ec2/launch" element={<LaunchInstance />} />
+                    <Route
+                      path="ec2/instance-management"
+                      element={<InstanceManagement />}
+                    />
                   </Routes>
                 </main>
               </div>
